@@ -54,6 +54,7 @@ class UpdateProfileView(LoginRequiredMixin, View):
     def post(self, request):
         profile = request.user.profile
         form = ProfileForm(request.POST, request.FILES, instance=profile)
+        
         if form.is_valid():
             profile = form.save()
             request.user.email = form.cleaned_data.get('email')
