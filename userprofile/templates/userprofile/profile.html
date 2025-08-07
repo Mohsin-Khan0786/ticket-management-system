@@ -1,0 +1,19 @@
+{% extends 'userprofile/base.html' %}
+
+{% block content %}
+<h2>My Profile</h2>
+<div class="card" style="width: 18rem;">
+    {% if profile.image %}
+        <img src="{{ profile.image.url }}" alt="Profile Picture" style="width: 150px;">
+
+    {% endif %}
+    <div class="card-body">
+        <h2>Welcome, {{ profile.user.email }}</h2>
+        <p><strong>Username:</strong> {{ request.user.username }}</p>
+        <p><strong>Email:</strong> {{ request.user.email }}</p>
+        <p><strong>Phone:</strong> {{ profile.phone }}</p>
+        <p><strong>Role:</strong> {{ profile.role }}</p>
+        <a href="{% url 'update_profile' %}" class="btn btn-primary">Update Profile</a>
+    </div>
+</div>
+{% endblock %}
