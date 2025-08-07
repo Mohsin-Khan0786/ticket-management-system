@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,8 +41,8 @@ INSTALLED_APPS = [
 ]
 AUTH_USER_MODEL='userprofile.CustomUser'
 
-MEDIA_ROOT = BASE_DIR / "media"
-MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "/media/"
+MEDIA_URL = "/media/"
 
 
 
@@ -104,6 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
 
 # Internationalization
@@ -117,7 +118,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 

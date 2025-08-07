@@ -10,11 +10,12 @@ class RoleChoice(models.TextChoices):
       DESIGNER='designer','Designer'
 
 class CustomUser(AbstractUser):
-
+    
     email = models.EmailField(unique=True)
+    username = models.CharField(max_length=50, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']  
+    REQUIRED_FIELDS = []  
     objects = CustomUserManager()
 
     def __str__(self):
@@ -22,7 +23,7 @@ class CustomUser(AbstractUser):
        
 class Profile(models.Model):
     user= models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    image=models.ImageField(default='default.jpg',upload_to='profile_pics/')
+    image=models.ImageField(default='profile_pics/default.jpg',upload_to='profile_pics/')
     phone=models.CharField(max_length=20)
     role=models.CharField(max_length=20, choices=RoleChoice.choices, default=RoleChoice.MANAGER)
 
