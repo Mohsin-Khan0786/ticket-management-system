@@ -1,0 +1,20 @@
+<!-- templates/tasks/task_delete.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            Confirm Task Deletion
+        </div>
+        <div class="card-body">
+            <p>Are you sure you want to delete the task <strong>{{ task.title }}</strong>?</p>
+            <form method="post">
+                {% csrf_token %}
+                <a href="{% url 'task_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

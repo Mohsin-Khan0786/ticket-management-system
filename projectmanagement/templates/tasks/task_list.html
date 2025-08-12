@@ -1,0 +1,84 @@
+{% extends 'userprofile/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Task List</h2>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">-- Filter by Status --</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="assignee" class="form-select">
+                <option value="">-- Filter by Assignee --</option>
+                {% for user in users %}
+                    <option value="{{ user.id }}" {% if request.GET.assignee == user.id|stringformat:"s" %}selected{% endif %}>
+                        {{ user.email }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <div class="row mb-4">
+        {% for project in projects %}
+            <div class="col-md-2 mb-2">
+                <a href="{% url 'task_create' project.id %}" class="btn btn-success w-100">
+                    + Create Task for {{ project.title }}
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Project</th>
+                <th>Assignee</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.project.title }}</td>
+                    <td>{{ task.assignee.email }}</td>
+                    <td>
+                        <form method="post" action="{% url 'task_change_status' task.id %}" class="d-flex align-items-center gap-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+                            <select name="new_status" class="form-select form-select-sm w-auto">
+                                {% for value, label in all_statuses %}
+                                <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-sm btn-outline-primary">Change</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="{% url 'task_detail' task.id %}" class="btn btn-sm btn-primary">View</a>
+                        <a href="{% url 'task_update' task.id %}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{% url 'task_delete' task.id %}" class="btn btn-sm btn-danger"
+                           onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No tasks found</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

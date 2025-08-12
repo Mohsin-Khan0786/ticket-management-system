@@ -1,0 +1,40 @@
+{% extends 'userprofile/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Update Project</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input type="text" name="title" class="form-control" value="{{ project.title }}" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea name="description" class="form-control" required>{{ project.description }}</textarea>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Start date</label>
+        <input type="date" name="start_date" class="form-control" value="{{ project.start_date|date:'Y-m-d' }}">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">End date</label>
+        <input type="date" name="end_date" class="form-control" value="{{ project.end_date|date:'Y-m-d' }}">
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Team Members</label>
+      <select name="team_members" class="form-select" multiple>
+        {% for user in users %}
+        <option value="{{ user.id }}" {% if user in project.team_members.all %}selected{% endif %}>{{ user.email }}</option>
+        {% endfor %}
+      </select>
+      <small class="text-muted">Hold Ctrl or Cmd to select multiple users.</small>
+    </div>
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}
+
