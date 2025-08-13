@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'userprofile',
     'projectmanagement',
     'attachments_and_comments',
+    'querrypractice'
 ]
 AUTH_USER_MODEL='userprofile.CustomUser'
 

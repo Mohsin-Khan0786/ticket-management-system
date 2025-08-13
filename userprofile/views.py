@@ -56,7 +56,6 @@ class ProfileView(LoginRequiredMixin, View):
         user_tasks = TaskModel.objects.filter(assignee=request.user).select_related('project')
         create_form = ProfileTaskForm()
         update_form = ProfileTaskForm()
-        # Managers see all projects; others see only projects they are a member of
         if getattr(request.user, 'profile', None) and request.user.profile.role == RoleChoice.MANAGER:
             available_projects = ProjectModel.objects.all()
         else:
@@ -75,17 +74,15 @@ class ProfileView(LoginRequiredMixin, View):
     def post(self, request):
         action = request.POST.get('action')
         if action == 'create':
-            # Require a project selection; managers can create projects from Projects page first
+
             project = None
             project_id = request.POST.get('project')
             if project_id:
                 project = ProjectModel.objects.filter(id=project_id).first()
-
-            # Create the task if we have a project
             title = request.POST.get('title')
             description = request.POST.get('description')
             status = request.POST.get('status') or TaskStatus.OPEN
-            # Determine assignee: managers can assign anyone; others assign self
+          
             is_manager = getattr(request.user, 'profile', None) and request.user.profile.role == RoleChoice.MANAGER
             assignee = request.user
             if is_manager:
@@ -94,7 +91,7 @@ class ProfileView(LoginRequiredMixin, View):
                     assignee = self.User.objects.filter(id=assignee_id).first() or request.user
 
             if project and title:
-                # Ensure assignee is part of the project team
+           
                 project.team_members.add(assignee)
                 TaskModel.objects.create(
                     title=title,
