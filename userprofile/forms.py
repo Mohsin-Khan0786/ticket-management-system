@@ -1,5 +1,6 @@
 from django import forms
-from .models import CustomUser,Profile
+from .models import CustomUser, Profile
+from projectmanagement.models import TaskModel
 from django.core.validators import RegexValidator
 
 class RegistrationForm(forms.ModelForm):
@@ -32,4 +33,7 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         fields = ['image', 'phone', 'role', 'email']
 
-      
+class ProfileTaskForm(forms.ModelForm):
+    class Meta:
+        model = TaskModel
+        fields = ['title', 'description', 'status', 'project']

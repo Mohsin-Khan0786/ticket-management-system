@@ -19,7 +19,7 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email 
+        return self.email
        
 class Profile(models.Model):
     user= models.OneToOneField(CustomUser, on_delete=models.CASCADE)

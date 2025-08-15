@@ -9,11 +9,174 @@
     {% endif %}
     <div class="card-body">
         <h2>Welcome, {{ profile.user.email }}</h2>
-        <p><strong>Username:</strong> {{ request.user.username }}</p>
-        <p><strong>Email:</strong> {{ request.user.email }}</p>
+        <p><strong>Username:</strong> {{ profile.user.username }}</p>
+        <p><strong>Email:</strong> {{ profile.user.email }}</p>
         <p><strong>Phone:</strong> {{ profile.phone }}</p>
         <p><strong>Role:</strong> {{ profile.role }}</p>
         <a href="{% url 'update_profile' %}" class="btn btn-primary">Update Profile</a>
     </div>
 </div>
+
+<hr class="my-4" />
+
+<div class="container mt-3">
+  <h3>My Tasks</h3>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Project</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+      <tr>
+        <td>{{ task.title }}</td>
+        <td>{{ task.project.title }}</td>
+        <td>{{ task.get_status_display }}</td>
+        <td>
+          <form method="post" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete" />
+            <input type="hidden" name="task_id" value="{{ task.id }}" />
+            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this task?')">Delete</button>
+          </form>
+
+          <button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#edit-{{ task.id }}">Edit</button>
+        </td>
+      </tr>
+      <tr class="collapse" id="edit-{{ task.id }}">
+        <td colspan="4">
+          <form method="post" class="row g-2">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update" />
+            <input type="hidden" name="task_id" value="{{ task.id }}" />
+            <div class="col-md-3">
+              <input type="text" name="title" class="form-control" value="{{ task.title }}" required />
+            </div>
+            <div class="col-md-3">
+              <select name="project" class="form-select" required>
+                {% for p in available_projects %}
+                <option value="{{ p.id }}" {% if p.id == task.project.id %}selected{% endif %}>{{ p.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-3">
+              <select name="status" class="form-select">
+                {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-3">
+              <input type="text" name="description" class="form-control" value="{{ task.description }}" />
+            </div>
+            <div class="col-md-12">
+              <button class="btn btn-sm btn-primary">Save</button>
+            </div>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" class="text-center">No tasks assigned to you.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h4>Create New Task</h4>
+  <form method="post" class="row g-2">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="create" />
+    <div class="col-md-3">
+      <input type="text" name="title" class="form-control" placeholder="Title" required />
+    </div>
+    <div class="col-md-3">
+      <select name="project" class="form-select">
+        {% for project in available_projects %}
+        <option value="{{ project.id }}">{{ project.title }}</option>
+        {% endfor %}
+      </select>
+      <div class="form-check mt-2">
+        <input class="form-check-input" type="checkbox" name="create_project" id="create_project_toggle">
+        <label class="form-check-label" for="create_project_toggle">
+          Or create a new project
+        </label>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <select name="status" class="form-select">
+        {% for value, label in status_choices %}
+        <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="description" class="form-control" placeholder="Description" />
+    </div>
+    {% if profile.role == 'manager' %}
+    <div class="col-md-3">
+      <label class="form-label">Assign to</label>
+      <select name="assignee" class="form-select">
+        <option value="{{ profile.user.id }}">Me ({{ profile.user.email }})</option>
+        {% for u in all_users %}
+        {% if u.id != profile.user.id %}
+        <option value="{{ u.id }}">{{ u.email }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    <div class="col-md-12 border rounded p-3 mt-2" id="new_project_fields" style="display:none;">
+      <h5>Create New Project</h5>
+      <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label">Project Title</label>
+          <input type="text" name="project_title" class="form-control" placeholder="New project title">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Start Date</label>
+          <input type="date" name="project_start_date" class="form-control">
+        </div>
+        <div class="col-md-12">
+          <label class="form-label">Project Description</label>
+          <textarea name="project_description" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">End Date</label>
+          <input type="date" name="project_end_date" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Assign Team Members</label>
+          <select multiple name="project_team_members" class="form-select">
+            {% for u in all_users %}
+            <option value="{{ u.id }}">{{ u.email }}</option>
+            {% endfor %}
+          </select>
+          <small class="text-muted">Hold Ctrl/Cmd to select multiple users.</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <button class="btn btn-success">Create Task</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function() {
+    const toggle = document.getElementById('create_project_toggle');
+    const fields = document.getElementById('new_project_fields');
+    if (toggle && fields) {
+      toggle.addEventListener('change', function () {
+        fields.style.display = this.checked ? 'block' : 'none';
+      });
+    }
+  })();
+</script>
 {% endblock %}
