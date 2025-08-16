@@ -29,8 +29,8 @@
 #11 exclude()
 # PatientModel.objects.exclude(age__lte=18)
 # 12 select_related & prefetch_related
-# PatientModel.objects.select_related('nurse').all()
-# PatientModel.objects.prefetch_related('doctors').all()
+# PatientModel.objects.select_related('nurse')
+# PatientModel.objects.prefetch_related('doctors')
 # 13 Update and delete
 #DoctorModel.objects.filter(id=1).update(specialization='oncologist')
 # DoctorModel.objects.get(id=4).delete()
