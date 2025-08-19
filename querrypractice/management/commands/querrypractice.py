@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta
-from django.db.models import Count, Avg
+from django.db.models import Count, Avg,Sum
 from querrypractice.models import *
 from django.db.models.functions import ExtractMonth
 from django.db.models import Max, Min
@@ -239,7 +239,7 @@ class Command(BaseCommand):
         print(list(result))
 
         # 49 Find the patients who have been treated by more than one nurse.
-        # (assuming hospitalmodel tracking nurses)
+       
         patients = PatientModel.objects.annotate(
             num_nurses=Count("hospital_patients__nurse", distinct=True)
         ).filter(num_nurses__gt=1)
@@ -281,7 +281,7 @@ class Command(BaseCommand):
         print([(p.name, p.num_doctors) for p in patients])
 
         # 7 Sum the ages of all patients.
-        total_age = PatientModel.objects.aggregate(total=Count("age"))
+        total_age = PatientModel.objects.aggregate(total=Sum("age"))
         print(total_age["total"])
 
         # 8 Select all patients along with the number of doctors associated with each.

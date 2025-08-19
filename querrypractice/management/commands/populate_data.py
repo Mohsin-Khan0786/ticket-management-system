@@ -31,11 +31,12 @@ class Command(BaseCommand):
             patient=PatientModel.objects.create(
                name=faker.name(),
                age=random.randint(1,80),
-               nurse=random.choice(nurses)
+               nurse=random.choice(nurses),
+               doctors=random.choice(doctors)
             )
-            assigned_doctor=random.sample(doctors,random.randint(1,3))
-            patient.doctors.set(assigned_doctor)
-            patients.append(patient)
+            assigned_doctor = random.choice(doctors)
+            patient.doctors = assigned_doctor
+            patient.save()
 
 
         for patient in patients:
@@ -43,7 +44,7 @@ class Command(BaseCommand):
             patient=patient,
             nurse=patient.nurse  
         )    
-        hospital.doctor.add(random.choice(doctors))    
+            hospital.doctor.add(random.choice(doctors))    
 
         for patient in patients:
             MedicalRecord.objects.create(
